@@ -150,7 +150,7 @@ export default function List() {
   if (!repositoryId && !isLoading) {
     return (
       <div className='flex items-center justify-center grow p-8'>
-        <p className='text-sm'>Enter a repository ID to get started.</p>
+        <RepositorySelector repositories={repositories} setRepositories={setRepositories} />
       </div>
     )
   }
@@ -163,7 +163,7 @@ export default function List() {
     <div className='flex flex-col grow h-[calc(100vh_-_66px)] overflow-y-scroll'>
       <div className='flex flex-col'>
         <div className='flex items-center justify-between gap-2 border-b p-8'>
-          <h1 className='flex gap-2 items-center text-3xl font-bold2'><span>All Documents</span><Badge variant='secondary'><NumberFlow value={documents.length} /></Badge></h1>
+          <h1 className='flex gap-2 items-center text-3xl font-bold'><span>All Documents</span><Badge variant='secondary'><NumberFlow value={documents.length} /></Badge></h1>
           <RepositorySelector repositories={repositories} setRepositories={setRepositories} />  
         </div>
         <div className='relative p-8'>

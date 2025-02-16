@@ -50,7 +50,7 @@ const SidebarSection = ({ Icon, items, title }: SidebarSectionProps) => (
   <SidebarGroup>
     <SidebarGroupLabel>{title}</SidebarGroupLabel>
     <SidebarMenu>
-      {items.map((item, i) => (
+      {items.length ? items.map((item, i) => (
         <Collapsible
           key={`${i}-${item.title}`}
           asChild
@@ -83,7 +83,11 @@ const SidebarSection = ({ Icon, items, title }: SidebarSectionProps) => (
             </CollapsibleContent>
           </SidebarMenuItem>
         </Collapsible>
-      ))}
+      )) : (
+        <SidebarMenuItem>
+          <span>No items found.</span>
+        </SidebarMenuItem>
+      )}
     </SidebarMenu>
   </SidebarGroup>
 )
