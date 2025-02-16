@@ -160,33 +160,35 @@ export default function List() {
   }
 
   return (
-    <div className='flex flex-col'>
-      <div className='flex items-center justify-between gap-2 border-b p-8'>
-        <h1 className='flex gap-2 items-center text-3xl font-bold mb-4'><span>All Documents</span><Badge variant='secondary'><NumberFlow value={documents.length} /></Badge></h1>
-        <RepositorySelector repositories={repositories} setRepositories={setRepositories} />  
-      </div>
-      <div className='relative p-8'>
-        <AnimatePresence mode='wait'>
-          {isLoading && <SkeletonList rows={documents.length > 0 && documents.length < 25 ? documents.length : 25} />}
-        </AnimatePresence>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>UID</TableHead>
-              <TableHead>Type</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {documents.map((document) => (
-              <TableRow key={document.id}>
-                <TableCell><span className='px-2 py-1 text-xs text-gray-500 bg-gray-50 rounded-sm border font-mono'>{document.id}</span></TableCell>
-                <TableCell>{document.uid}</TableCell>
-                <TableCell>{document.type}</TableCell>
+    <div className='flex flex-col grow h-[calc(100vh_-_66px)] overflow-y-scroll'>
+      <div className='flex flex-col'>
+        <div className='flex items-center justify-between gap-2 border-b p-8'>
+          <h1 className='flex gap-2 items-center text-3xl font-bold2'><span>All Documents</span><Badge variant='secondary'><NumberFlow value={documents.length} /></Badge></h1>
+          <RepositorySelector repositories={repositories} setRepositories={setRepositories} />  
+        </div>
+        <div className='relative p-8'>
+          <AnimatePresence mode='wait'>
+            {isLoading && <SkeletonList rows={documents.length > 0 && documents.length < 25 ? documents.length : 25} />}
+          </AnimatePresence>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>UID</TableHead>
+                <TableHead>Type</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {documents.map((document) => (
+                <TableRow key={document.id}>
+                  <TableCell><span className='px-2 py-1 text-xs text-gray-500 bg-gray-50 rounded-sm border font-mono'>{document.id}</span></TableCell>
+                  <TableCell>{document.uid}</TableCell>
+                  <TableCell>{document.type}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   )

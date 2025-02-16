@@ -22,7 +22,7 @@ interface BreadcrumbBarProps {
 
 export default function BreadcrumbBar({ items }: BreadcrumbBarProps) {
   return (
-    <nav className='flex items-center gap-2 h-10 border-b px-8'>
+    <nav className='flex items-center gap-2 h-[65px] border-b px-8'>
       <SidebarTrigger />
       <Separator orientation='vertical' className='mr-2 h-4' />
       <Breadcrumb>

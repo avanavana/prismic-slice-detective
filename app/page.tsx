@@ -8,15 +8,13 @@ import Spinner from '@/components/Spinner'
 
 export default async function Home() {                                                                                                
   return (
-    <div className='flex flex-col min-h-screen'>
+    <div className='flex flex-col h-screen'>
       <BreadcrumbBar items={[ { title: 'Prismic Slice Detective', href: '/' }, { title: 'All Documents'}]} />
-      <div className='flex flex-col grow'>
-        <ErrorBoundaryWithRetry message={`Couldn't load data for the selected repository. If you're sure the repository you've chosen isn't set to "private", please try again.`}>
-          <Suspense fallback={<div className='flex items-center justify-center grow p-8'><Spinner /></div>}>
-            <List />
-          </Suspense>
-        </ErrorBoundaryWithRetry>
-      </div>
+      <ErrorBoundaryWithRetry message={`Couldn't load data for the selected repository. If you're sure the repository you've chosen isn't set to "private", please try again.`}>
+        <Suspense fallback={<div className='flex items-center justify-center grow p-8'><Spinner /></div>}>
+          <List />
+        </Suspense>
+      </ErrorBoundaryWithRetry>
     </div>
   )
 }
