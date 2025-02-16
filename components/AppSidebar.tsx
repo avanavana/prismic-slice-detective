@@ -85,7 +85,7 @@ const SidebarSection = ({ Icon, items, title }: SidebarSectionProps) => (
         </Collapsible>
       )) : (
         <SidebarMenuItem>
-          <span>No items found.</span>
+          <span className='h-8 p-2 text-sm'>No items found.</span>
         </SidebarMenuItem>
       )}
     </SidebarMenu>

@@ -34,9 +34,12 @@ export default function RepositoryInput({ setRepositories }: RepositoryInputProp
   }
 
   return (
-    <form action={handleSubmit} className='flex gap-2'>
-      <Input name='repositoryId' value={repositoryIdInputValue} onChange={(e) => setRepositoryIdInputValue(e.target.value)} placeholder='Enter a Prismic repository ID…' />
-      <Button type='submit' disabled={isPending}>{isPending ? <Spinner className='fill-background' /> : 'Use repository'}</Button>
-    </form>
+    <div className='flex flex-col gap-4 min-w-1/3'>
+      <p className='text-sm'>Enter a Prismic repository ID to get started.</p>
+      <form action={handleSubmit} className='flex gap-2'>
+        <Input name='repositoryId' value={repositoryIdInputValue} onChange={(e) => setRepositoryIdInputValue(e.target.value)} placeholder='Repository ID…' />
+        <Button type='submit' disabled={isPending}>{isPending ? <Spinner className='fill-background' /> : 'Use repository'}</Button>
+      </form>
+    </div>
   )
 }
