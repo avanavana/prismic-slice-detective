@@ -10,7 +10,7 @@ interface GenericErrorProps {
   message: string | (() => string) 
 }
 
-interface StaticErrorProps extends GenericErrorProps {}
+type StaticErrorProps = GenericErrorProps
 
 interface DynamicErrorProps extends GenericErrorProps {
   isRetrying?: boolean

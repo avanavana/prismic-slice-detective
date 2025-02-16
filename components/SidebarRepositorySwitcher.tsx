@@ -18,7 +18,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/Sidebar'
-import { set } from 'zod'
 
 interface SidebarRepositorySwitcherProps {
   repositories: string[]

@@ -9,7 +9,8 @@ export async function POST(req: Request) {
   try {
     addRepository(repositoryId)
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
+  } catch (error) {
+    if (error instanceof Error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ error: 'An unknown error occurred' }, { status: 400 })
   }
 }
