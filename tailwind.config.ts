@@ -1,13 +1,14 @@
-import animate from 'tailwindcss-animate';
+import animate from 'tailwindcss-animate'
+import { fontFamily } from 'tailwindcss/defaultTheme'
 
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
-const config: Config = {
-    darkMode: ["class"],
+export default {
+    darkMode: ['class'],
     content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
   	extend: {
@@ -67,9 +68,12 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+      fontFamily: {
+        mono: ['var(--font-geist-mono)', ...fontFamily.mono ],
+        sans: ['var(--font-geist-sans)', ...fontFamily.sans ]
+      }
   	}
   },
-  plugins: [animate],
-};
-export default config;
+  plugins: [ animate ]
+} satisfies Config
