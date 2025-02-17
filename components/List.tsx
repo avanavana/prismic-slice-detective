@@ -147,7 +147,7 @@ export default function List() {
     loadDocuments()
   }, [ repositoryId ])
   
-  if (!repositoryId && !isLoading) {
+  if (!repositoryId) {
     return (
       <div className='flex items-center justify-center grow p-8'>
         <RepositorySelector repositories={repositories} setRepositories={setRepositories} />
