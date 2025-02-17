@@ -8,8 +8,24 @@ const redis = new Redis({
 const DEFAULT_TTL = 60 * 60
 
 export async function getCachedData<T>(key: string): Promise<T | null> {
-  const data = await redis.get(key)
-  return data ? JSON.parse(data as string) as T : null
+  let data: string | T | null
+  
+  try {
+    data = await redis.get(key)
+    if (!data) return null
+    if (typeof data === 'string') {
+      console.log(`First 10 chars: ${data.slice(0, 10)}`)
+    }
+    
+    return typeof data === 'string' ? JSON.parse(data) as T : data as T
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(`Cache error for key ${key}: ${error.message}`)
+    } else {
+      console.error(`Cache error for key ${key}: ${String(error)}`)
+    }
+    return null
+  }
 }
 
 export async function setCachedData<T>(key: string, data: T, { ttl = DEFAULT_TTL }): Promise<void> {
