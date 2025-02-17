@@ -3,8 +3,14 @@ import { getCachedData, setCachedData } from '@/lib/cache'
 
 import type { Client, PrismicDocument, Query, QueryParams, SharedSlice } from '@prismicio/client'
 
+export interface PrismicSlice extends Pick<SharedSlice, 'id' | 'slice_type' | 'slice_label'> {
+  variations: string[]
+}
+
+type PrismicDocumentSlice = Pick<SharedSlice, 'id' | 'slice_type' | 'slice_label' | 'variation'>
+
 export interface SimplifiedPrismicDocument extends Pick<PrismicDocument, 'id' | 'uid' | 'type' | 'href' | 'lang' | 'first_publication_date' | 'last_publication_date' | 'slugs'> {
-  slices: PrismicSlice[]
+  slices: PrismicDocumentSlice[]
 }
 
 const DEFAULT_TTL = 60 * 60
@@ -34,11 +40,11 @@ export function simplifyPrismicDocuments(documents: PrismicDocument[]): Simplifi
   }))
 }
 
-export async function getAllDocuments(repositoryId: string, params?: QueryParams): Promise<PrismicDocument[]> {
+export async function getAllDocuments(repositoryId: string, params?: QueryParams): Promise<SimplifiedPrismicDocument[]> {
   if (!repositoryId) throw new Error('Repository ID is a required parameter.')
 
   const cacheKey = `${repositoryId}-all-documents`
-  const cachedData = await getCachedData<PrismicDocument[]>(cacheKey)
+  const cachedData = await getCachedData<SimplifiedPrismicDocument[]>(cacheKey)
 
   if (cachedData) {
     console.log(`Cache hit: All documents, "${repositoryId}"`)
@@ -67,7 +73,7 @@ export async function getAllDocuments(repositoryId: string, params?: QueryParams
   const simplifiedResults = simplifyPrismicDocuments(results)
 
   setCachedData(cacheKey, simplifiedResults, { ttl: DEFAULT_TTL })
-  return results
+  return simplifiedResults
 }
 
 export async function getAllDocumentTypes(repositoryId: string): Promise<string[]> {
@@ -88,10 +94,6 @@ export async function getAllDocumentTypes(repositoryId: string): Promise<string[
   return Array.from(documentTypes)
 }
 
-export interface PrismicSlice extends Pick<SharedSlice, 'id' | 'slice_type' | 'slice_label'> {
-  variations: string[]
-}
-
 export async function getAllSlices(repositoryId: string): Promise<PrismicSlice[]> {
   if (!repositoryId) throw new Error('Repository ID is required.')
 
@@ -108,8 +110,8 @@ export async function getAllSlices(repositoryId: string): Promise<PrismicSlice[]
   const sliceTypes = new Map<string, PrismicSlice>()
 
   documents.forEach((document) => {
-    if (document.data.slices) {
-      document.data.slices.forEach(({ id, slice_type, slice_label, variation }: SharedSlice) => {
+    if (document.slices) {
+      document.slices.forEach(({ id, slice_type, slice_label, variation }: PrismicDocumentSlice) => {
         if (!sliceTypes.has(slice_type)) {
           sliceTypes.set(slice_type, { id, slice_type, slice_label, variations: [ variation ] })
         } else {

@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { fetchAllDocuments } from '@/lib/api'
 
-import type { SimplifiedPrismicDocument } from '@/lib/api'
+import type { SimplifiedPrismicDocument } from '@/lib/prismic'
 
 interface SkeletonListProps {
   rows: number

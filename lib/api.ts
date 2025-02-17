@@ -1,10 +1,4 @@
-import type { PrismicDocument } from '@prismicio/client'
-
-import type { PrismicSlice } from '@/lib/prismic'
-
-export interface SimplifiedPrismicDocument extends Pick<PrismicDocument, 'id' | 'uid' | 'type' | 'href' | 'lang' | 'first_publication_date' | 'last_publication_date' | 'slugs'> {
-  slices: PrismicSlice[]
-}
+import type { PrismicSlice, SimplifiedPrismicDocument } from '@/lib/prismic'
 
 const DEFAULT_TTL = 1000 * 60 * 60
 
