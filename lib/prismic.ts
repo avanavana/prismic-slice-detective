@@ -1,29 +1,19 @@
 import * as prismic from '@prismicio/client'
-import cache from '@/lib/cache'
+import { getCachedData, setCachedData } from '@/lib/cache'
 
 import type { Client, PrismicDocument, Query, QueryParams, SharedSlice } from '@prismicio/client'
 
-const DEFAULT_TTL = 1000 * 60 * 60
+const DEFAULT_TTL = 60 * 60
 
 function createClient(repositoryId: string): Client {
   return prismic.createClient(repositoryId)
-}
-
-export function getCachedData(key: string): unknown | null {
-  const data = cache.prepare('SELECT value FROM cache WHERE key = ? AND expires_at > ?').get(key, Date.now()) as { value: string } | undefined
-  return data ? JSON.parse(data.value) : null
-}
-
-export function setCachedData(key: string, data: unknown, { ttl = DEFAULT_TTL }: { ttl?: number } = {}): void {
-  const expiresAt = Date.now() + ttl
-  cache.prepare('INSERT OR REPLACE INTO cache (key, value, expires_at) VALUES (?, ?, ?)').run(key, JSON.stringify(data), expiresAt)
 }
 
 export async function getAllDocuments(repositoryId: string, params?: QueryParams): Promise<PrismicDocument[]> {
   if (!repositoryId) throw new Error('Repository ID is a required parameter.')
 
   const cacheKey = `${repositoryId}-all-documents`
-  const cachedData = getCachedData(cacheKey) as PrismicDocument[] | null
+  const cachedData = await getCachedData<PrismicDocument[]>(cacheKey)
 
   if (cachedData) {
     console.log(`Cache hit: All documents, "${repositoryId}"`)
@@ -57,7 +47,7 @@ export async function getAllDocumentTypes(repositoryId: string): Promise<string[
   if (!repositoryId) throw new Error('Repository ID is required.')
 
   const cacheKey = `${repositoryId}-all-document-types`
-  const cachedData = getCachedData(cacheKey) as string[] | null
+  const cachedData = await getCachedData<string[]>(cacheKey)
 
   if (cachedData) {
     console.log(`Cache hit: All document types, "${repositoryId}"`)
@@ -79,7 +69,7 @@ export async function getAllSlices(repositoryId: string): Promise<PrismicSlice[]
   if (!repositoryId) throw new Error('Repository ID is required.')
 
   const cacheKey = `${repositoryId}-all-slices`
-  const cachedData = getCachedData(cacheKey) as PrismicSlice[] | null
+  const cachedData = await getCachedData<PrismicSlice[]>(cacheKey)
 
   if (cachedData) {
     console.log(`Cache hit: All slices, "${repositoryId}"`)
@@ -107,14 +97,14 @@ export async function getAllSlices(repositoryId: string): Promise<PrismicSlice[]
   return Array.from(sliceTypes.values())
 }
 
-export function addRepository(repositoryId: string): void {
+export async function addRepository(repositoryId: string): Promise<void> {
   if (!repositoryId.trim()) return
 
-  const storedRepositories = JSON.parse(localStorage.getItem('repositories') || '[]')
+  const cacheKey = 'repositories'
+  const repositories = await getCachedData<string[]>(cacheKey) || []
 
-  if (!storedRepositories.includes(repositoryId)) {
-    const updatedRepositories = [ repositoryId, ...storedRepositories ]
-    localStorage.setItem('repositories', JSON.stringify(updatedRepositories))
-    setCachedData('repositories', updatedRepositories, { ttl: Infinity })
+  if (!repositories.includes(repositoryId)) {
+    const updatedRepositories = [ repositoryId, ...repositories ]
+    setCachedData(cacheKey, updatedRepositories, { ttl: DEFAULT_TTL * 24 })
   }
 }

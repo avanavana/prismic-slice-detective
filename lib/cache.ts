@@ -1,24 +1,21 @@
-import fs from 'fs'
-import path from 'path'
-import Database from 'better-sqlite3'
+import { Redis } from '@upstash/redis'
 
-const DB_PATH = process.env.CACHE_DB_PATH || path.join(process.cwd(), 'data/db/cache.db')
-const DB_DIR = path.dirname(DB_PATH)
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN
+})
 
-if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true })
+const DEFAULT_TTL = 60 * 60
 
-const cacheGlobal = globalThis as unknown as { cache?: InstanceType<typeof Database> }
+export async function getCachedData<T>(key: string): Promise<T | null> {
+  const data = await redis.get(key)
+  return data ? JSON.parse(data as string) as T : null
+}
 
-if (!cacheGlobal.cache) cacheGlobal.cache = new Database(DB_PATH)
+export async function setCachedData<T>(key: string, data: T, { ttl = DEFAULT_TTL }): Promise<void> {
+  await redis.set(key, JSON.stringify(data), { ex: ttl })
+}
 
-const cache = cacheGlobal.cache
-
-cache.exec(`
-  CREATE TABLE IF NOT EXISTS cache (
-    key TEXT PRIMARY KEY,
-    value TEXT,
-    expires_at INTEGER
-  )
-`)
-
-export default cache
+export async function deleteCachedData(key: string): Promise<void> {
+  await redis.del(key)
+}
