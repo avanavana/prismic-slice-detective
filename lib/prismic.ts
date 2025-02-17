@@ -3,10 +3,35 @@ import { getCachedData, setCachedData } from '@/lib/cache'
 
 import type { Client, PrismicDocument, Query, QueryParams, SharedSlice } from '@prismicio/client'
 
+export interface SimplifiedPrismicDocument extends Pick<PrismicDocument, 'id' | 'uid' | 'type' | 'href' | 'lang' | 'first_publication_date' | 'last_publication_date' | 'slugs'> {
+  slices: PrismicSlice[]
+}
+
 const DEFAULT_TTL = 60 * 60
 
 function createClient(repositoryId: string): Client {
   return prismic.createClient(repositoryId)
+}
+
+export function simplifyPrismicDocuments(documents: PrismicDocument[]): SimplifiedPrismicDocument[] {
+  return documents.map((doc: PrismicDocument) => ({
+    id: doc.id,
+    uid: doc.uid,
+    type: doc.type,
+    href: doc.href,
+    lang: doc.lang,
+    first_publication_date: doc.first_publication_date,
+    last_publication_date: doc.last_publication_date,
+    slugs: doc?.slugs && doc.slugs.length ? doc.slugs : [],
+    slices: doc.data?.slices && doc.data?.slices.length 
+      ? doc.data.slices.map((slice: SharedSlice) => ({
+          id: slice.id,
+          slice_type: slice.slice_type,
+          slice_label: slice.slice_label,
+          variation: slice.variation ? slice.variation : null
+        }))
+      : []
+  }))
 }
 
 export async function getAllDocuments(repositoryId: string, params?: QueryParams): Promise<PrismicDocument[]> {
@@ -39,7 +64,9 @@ export async function getAllDocuments(repositoryId: string, params?: QueryParams
     currentPage++
   } while (response.next_page)
 
-  setCachedData(cacheKey, results, { ttl: DEFAULT_TTL })
+  const simplifiedResults = simplifyPrismicDocuments(results)
+
+  setCachedData(cacheKey, simplifiedResults, { ttl: DEFAULT_TTL })
   return results
 }
 

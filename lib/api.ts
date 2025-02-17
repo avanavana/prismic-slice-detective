@@ -1,4 +1,4 @@
-import type { PrismicDocument, SharedSlice } from '@prismicio/client'
+import type { PrismicDocument } from '@prismicio/client'
 
 import type { PrismicSlice } from '@/lib/prismic'
 
@@ -12,27 +12,6 @@ const API_ENDPOINTS: Record<string, string> = {
   'all-documents': '/api/documents',
   'all-document-types': '/api/documents/types',
   'all-slices': '/api/slices'
-}
-
-function simplifyPrismicDocument(documents: PrismicDocument[]): SimplifiedPrismicDocument[] {
-  return documents.map((doc: PrismicDocument) => ({
-    id: doc.id,
-    uid: doc.uid,
-    type: doc.type,
-    href: doc.href,
-    lang: doc.lang,
-    first_publication_date: doc.first_publication_date,
-    last_publication_date: doc.last_publication_date,
-    slugs: doc?.slugs && doc.slugs.length ? doc.slugs : [],
-    slices: doc.data?.slices && doc.data?.slices.length 
-      ? doc.data.slices.map((slice: SharedSlice) => ({
-          id: slice.id,
-          slice_type: slice.slice_type,
-          slice_label: slice.slice_label,
-          variation: slice.variation ? slice.variation : null
-        }))
-      : []
-  }))
 }
 
 async function fetchWithCache<T>(
@@ -74,7 +53,7 @@ async function fetchWithCache<T>(
 }
 
 export async function fetchAllDocuments(repositoryId: string) {
-  return fetchWithCache<SimplifiedPrismicDocument[]>('all-documents', repositoryId, (data) => simplifyPrismicDocument(data as PrismicDocument[]))
+  return fetchWithCache<SimplifiedPrismicDocument[]>('all-documents', repositoryId)
 }
 
 export async function fetchAllDocumentTypes(repositoryId: string) {
